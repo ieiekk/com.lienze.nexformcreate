@@ -57,7 +57,7 @@
           <CEFCommandLine>
             <Parameter>--enable-nodejs</Parameter>
           </CEFCommandLine>
-				<!-- <ScriptPath>./jsx/hostscript.jsx</ScriptPath> -->
+				<ScriptPath>./jsx/hostscript.jsx</ScriptPath>
 				</Resources>
 				<Lifecycle>
 					<AutoVisible>true</AutoVisible>

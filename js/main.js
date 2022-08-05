@@ -1,6 +1,22 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global $, window, location, CSInterface, SystemPath, themeManager*/
 
+var csInterface = new CSInterface();
+
+let AESource = {
+  type: 'Type',
+  comp: 'Comp',
+  layer: 'Layer',
+  prop: 'Prop',
+  value: 'Value',
+};
+
+/* Helper function to create and return a promise object */
+function runEvalScript(script) {
+  return new Promise(function (resolve, reject) {
+    csInterface.evalScript(script, resolve);
+  });
+}
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('Quests', function () {
@@ -8,168 +24,33 @@ document.addEventListener('alpine:init', () => {
       data: this.$persist({
         formTitle: 'Test Title',
         formDescription: 'Test Description',
-        quests: [
-          // page 1
-          [
-            {
-              uuid: uuid(),
-              form: {
-                title: 'Title1',
-                description: 'Description1',
-                type: 'singleLineText',
-                options: ['選項一', '選項二', '選項三'],
-              },
-              AE: {
-                type: 'data',
-                comp: 'Comp',
-                layer: 'Layer',
-                prop: 'Property',
-                value: 'AE source text',
-              },
-            },
-            {
-              uuid: uuid(),
-              form: {
-                title: 'Title2',
-                description: 'Description2',
-                type: 'multiLineText',
-                options: ['選項一', '選項二', '選項三'],
-              },
-              AE: {
-                type: 'data',
-                comp: 'Comp',
-                layer: 'Layer',
-                prop: 'Property',
-                value: 'AE source text multi-line',
-              },
-            },
-            {
-              uuid: uuid(),
-              form: {
-                type: 'data',
-                title: 'Title3',
-                description: 'Description3',
-                type: 'selection',
-                options: ['選項一', '選項二', '選項三'],
-              },
-              AE: {
-                type: 'data',
-                comp: 'Comp',
-                layer: 'Layer',
-                prop: 'Property',
-                value: 1,
-              },
-            },
-            {
-              uuid: uuid(),
-              form: {
-                title: 'Title4',
-                description: 'Description3',
-                type: 'file',
-                options: ['選項一', '選項二', '選項三'],
-              },
-              AE: {
-                type: 'video',
-                comp: 'Comp',
-                layer: 'Layer',
-                prop: 'Property',
-                value: '~/path/to/thisFile.mp4', // For footage, it's the filepath
-              },
-            },
-          ],
-          // page 2
-          [
-            {
-              uuid: uuid(),
-              form: {
-                title: 'Title1',
-                description: 'Description1',
-                type: 'singleLineText',
-                options: ['選項一', '選項二', '選項三'],
-              },
-              AE: {
-                type: 'data',
-                comp: 'Comp',
-                layer: 'Layer',
-                prop: 'Property',
-                value: 'AE source text',
-              },
-            },
-            {
-              uuid: uuid(),
-              form: {
-                title: 'Title2',
-                description: 'Description2',
-                type: 'multiLineText',
-                options: ['選項一', '選項二', '選項三'],
-              },
-              AE: {
-                type: 'data',
-                comp: 'Comp',
-                layer: 'Layer',
-                prop: 'Property',
-                value: 'AE source text multi-line',
-              },
-            },
-            {
-              uuid: uuid(),
-              form: {
-                title: 'Title3',
-                description: 'Description3',
-                type: 'selection',
-                options: ['選項一', '選項二', '選項三'],
-              },
-              AE: {
-                type: 'data',
-                comp: 'Comp',
-                layer: 'Layer',
-                prop: 'Property',
-                value: 1,
-              },
-            },
-          ],
-        ],
+        quests: [[]],
       }),
 
       currentPage: this.$persist(1),
 
       addQuest() {
-        const emptyQuest = {
+        const activeQuest = {
           uuid: uuid(),
           form: {
-            title: 'Title3',
-            description: 'Description3',
-            type: 'selection',
+            title: `${AESource.comp}-${AESource.layer}-${AESource.prop}`,
+            description: 'Description',
+            type: 'singleLineText',
             options: ['選項一', '選項二', '選項三'],
           },
           AE: {
             type: 'data',
-            comp: 'Comp',
-            layer: 'Layer',
-            prop: 'Property',
-            value: 1,
+            comp: AESource.comp,
+            layer: AESource.layer,
+            prop: AESource.prop,
+            value: AESource.value,
           },
         };
 
         if (this.data.quests.length === 0) {
-          this.data.quests.push([emptyQuest]);
+          this.data.quests.push([activeQuest]);
         } else {
-          this.data.quests[this.currentPage - 1].push({
-            uuid: uuid(),
-            form: {
-              title: 'Title3',
-              description: 'Description3',
-              type: 'selection',
-              options: ['選項一', '選項二', '選項三'],
-            },
-            AE: {
-              type: 'data',
-              comp: 'Comp',
-              layer: 'Layer',
-              prop: 'Property',
-              value: 1,
-            },
-          });
+          this.data.quests[this.currentPage - 1].push(activeQuest);
         }
       },
 
@@ -189,10 +70,6 @@ document.addEventListener('alpine:init', () => {
       submit() {
         const modalBody = document.getElementById('modal-body');
         modalBody.innerText = 'Submitting...';
-
-        setTimeout(() => {
-          alert(JSON.stringify(this.data));
-        }, 100);
       },
 
       clear() {
@@ -204,6 +81,20 @@ document.addEventListener('alpine:init', () => {
     };
   });
 });
+
+addEventListener('mousemove', () => {
+  updateAESource();
+
+  document.getElementById('btn-test').addEventListener('click', () => {});
+});
+
+// Utils
+
+function updateAESource() {
+  csInterface.evalScript('updateAESource()', (res) => {
+    AESource = JSON.parse(res);
+  });
+}
 
 function uuid() {
   var d = Date.now();
