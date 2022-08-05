@@ -78,6 +78,10 @@ textarea:disabled {
   cursor: pointer;
 }
 
+.card-button {
+  cursor: pointer;
+}
+
 
 
 /*

@@ -82,10 +82,12 @@ document.addEventListener('alpine:init', () => {
   });
 });
 
-addEventListener('mousemove', () => {
+// addEventListener('mousemove', () => {});
+document.getElementById('btn-test').addEventListener('click', () => {
   updateAESource();
-
-  document.getElementById('btn-test').addEventListener('click', () => {});
+});
+document.getElementById('btn-add').addEventListener('mouseenter', () => {
+  updateAESource();
 });
 
 // Utils

@@ -25,18 +25,36 @@ function saveJob(job) {
 
 function updateAESource() {
   var data = {};
+  var comp, layer, prop, value;
   if (app.project.activeItem instanceof CompItem) {
-    data.comp = app.project.activeItem.name;
+    comp = app.project.activeItem;
+    data.comp = comp.name;
   }
   if (app.project.activeItem.selectedLayers.length > 0) {
-    data.layer = app.project.activeItem.selectedLayers[0].name;
+    layer = app.project.activeItem.selectedLayers[0];
+    data.layer = layer.name;
   }
   if (app.project.activeItem.selectedProperties.length > 0) {
-    var sp = app.project.activeItem.selectedProperties[0];
-    data.prop = sp.name;
-    data.value = sp.value;
+    prop = app.project.activeItem.selectedProperties[0];
+    // If not PropertyType.PROPERTY then return
+    data.prop = prop.name;
+    data.type = 'data';
+    data.value = prop.font;
+  } else if (layer != undefined) {
+    if (layer.source instanceof FootageItem) {
+      data.value = layer.source.file.fsName.replace(/\\/gi, '/');
+      data.prop = 'Footage';
+      // Distinguish image, video, audio file
+      if (!layer.source.hasAudio) {
+        data.type = 'image';
+      } else if (!layer.source.hasVideo) {
+        data.type = 'audio';
+      } else {
+        data.type = 'video';
+      }
+    }
   }
-
-  // alert(JSON.stringify(data));
   return JSON.stringify(data);
 }
+
+alert(updateAESource());
