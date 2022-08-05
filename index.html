@@ -4,11 +4,19 @@
 <head>
   <meta charset="utf-8">
 
+  <script src="https://kit.fontawesome.com/b695330ad2.js" crossorigin="anonymous"></script>
+
+  <!-- Alpine Plugins -->
+  <script defer src="https://unpkg.com/@alpinejs/persist@3.x.x/dist/cdn.min.js"></script>
+
+  <!-- Alpine Core -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
 
   <!-- CSS only -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+
 
   <!-- <link id="ccstyleTheme" href="css/styles-dark.css" rel="stylesheet" type="text/css" /> -->
   <link id="hostStyle" rel="stylesheet" href="css/styles.css" />
@@ -16,15 +24,123 @@
   <title></title>
 </head>
 
-<body require-nodejs class="hostElt">
+<body require-nodejs class="hostElt" x-data="Quests">
 
-  <div id="content" x-data="Quests">
+  <!-- Submit Modal -->
+  <div class="modal fade" id="submitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Confirm Message</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="modal-body" class="modal-body" x-ref="modalBody">
+          Are you sure to submit this form?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="submit">OK</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <div id="questcard-page" x-effect="console.log(quests)">
+  <!-- Clear Modal -->
+  <div class="modal fade" id="clearModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Warning</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="modal-body" class="modal-body" x-ref="modalBody">
+          Are you sure to clear this form?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" @click="clear">OK</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Header -->
+  <nav class="navbar sticky-top mb-3 mt-0 shadow px-2 py-3">
+    <div class="container-fluid">
+      <div class="d-flex flex-column w-100">
+
+
+        <div class="input-group mb-3 mb-2">
+          <span class="input-group-text">Title :</span>
+          <input type="text" class="form-control p-2 fs-5" x-model="data.formTitle">
+        </div>
+
+        <div class="input-group">
+          <span class="input-group-text">Description :</span>
+          <textarea class="form-control" id="header-form-description" class="form-control" aria-label="description"
+            x-model="data.formDescription" rows='2'></textarea>
+
+        </div>
+
+        <div class="button-group d-flex flex-row justify-content-end my-3">
+
+          <!-- Submit Button -->
+          <button type="button" class="btn btn-primary align-self-center" data-bs-toggle="modal"
+            data-bs-target="#submitModal">
+            Submit
+          </button>
+
+          <!-- Clear Button -->
+          <button type="button" class="btn btn-danger align-self-center ms-2" data-bs-toggle="modal"
+            data-bs-target="#clearModal">
+            Clear
+          </button>
+
+        </div>
+      </div>
+    </div>
+  </nav>
+
+
+  <div id="content">
+
+    <div id="questcard-page" x-effect="console.log(data.quests)">
       <!-- Card -->
-      <template x-for="quest in quests[currentPage-1]">
-        <div class="card mb-3 fs-6" x-id="['quest']" x-effect="quest.xid=$id('quest')">
-          <div class="card-header fw-lighter" x-text="`${quest.AE.comp} | ${quest.AE.layer} | ${quest.AE.prop}`">Source
+      <template x-for="(quest, index) in data.quests[currentPage-1]">
+        <div class="card mb-3 fs-6" x-ref="card">
+          <div class="card-header fw-light d-flex flex-row justify-content-between">
+            <span x-text="`${quest.AE.comp} | ${quest.AE.layer} | ${quest.AE.prop}`">Source</span>
+
+            <div class="button-group d-flex flex-row gap-3">
+
+              <!-- Up -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
+                @click="()=>{if(index===0)return;data.quests[currentPage-1].splice(index-1,0,quest);data.quests[currentPage-1].splice(index+1,1)}">
+                <!--! Font Awesome Pro 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                <path
+                  d="M352 352c-8.188 0-16.38-3.125-22.62-9.375L192 205.3l-137.4 137.4c-12.5 12.5-32.75 12.5-45.25 0s-12.5-32.75 0-45.25l160-160c12.5-12.5 32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25C368.4 348.9 360.2 352 352 352z" />
+              </svg>
+
+              <!-- Down -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"
+                @click="()=>{console.log(index);if(index===data.quests[currentPage-1].length - 1)return;data.quests[currentPage-1].splice(index+2,0,quest);data.quests[currentPage-1].splice(index,1);}">
+                <!--! Font Awesome Pro 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                <path
+                  d="M192 384c-8.188 0-16.38-3.125-22.62-9.375l-160-160c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L192 306.8l137.4-137.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-160 160C208.4 380.9 200.2 384 192 384z" />
+              </svg>
+
+              <!-- Cross -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" @click="data.quests[currentPage - 1] = data.quests[currentPage - 1].filter(
+                (q) => q.uuid != quest.uuid)">
+                <!--! Font Awesome Pro 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                <path
+                  d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z" />
+              </svg>
+
+            </div>
+
           </div>
           <div class="card-body">
 
@@ -133,17 +249,34 @@
 
 
       <!-- Pagination -->
-      <nav aria-label="Page navigation example" class="mt-4">
-        <ul class="pagination justify-content-center">
+      <nav aria-label="Page navigation example" class="mt-4 align-self-baseline">
+        <ul class="pagination justify-content-center align-items-center">
           <!-- Page button list -->
-          <template x-for="(quest, index) in quests">
+          <template x-for="(quest, index) in data.quests">
             <li :class="index === currentPage - 1 ? 'page-item active' : 'page-item'" aria-current="page">
               <a class="page-link page-number" x-text="index + 1" @click="currentPage = index + 1">#</a>
             </li>
           </template>
+
+          <!-- Add Page Button -->
+          <li class="ms-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="btn-page" @click="addPage">
+              <!--! Font Awesome Pro 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+              <path
+                d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z" />
+            </svg>
+          </li>
+
+          <li>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="btn-page" @click="removePage">
+              <!--! Font Awesome Pro 6.1.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+              <path
+                d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z" />
+            </svg>
+          </li>
+
         </ul>
       </nav>
-
 
     </div>
   </div>
@@ -157,6 +290,9 @@
   <!-- <script src="js/libs/jquery-2.0.2.min.js"></script> -->
   <script src="js/libs/json2.js"></script>
   <script src="js/libs/jsx.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"
+    integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- JavaScript Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"

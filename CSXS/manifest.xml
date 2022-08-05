@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ExtensionManifest Version="9.0" ExtensionBundleId="com.lienze.nexformcreate" ExtensionBundleVersion="1.0.0"
+<ExtensionManifest Version="8.0" ExtensionBundleId="com.lienze.nexformcreate" ExtensionBundleVersion="1.0.0"
 		ExtensionBundleName="NexForm Create" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<ExtensionList>
 		<Extension Id="com.lienze.nexformcreate" Version="1.0.0" />
@@ -54,10 +54,10 @@
 			<DispatchInfo >
 				<Resources>
 				<MainPath>./index.html</MainPath>
-				<CEFCommandLine>
-                    			<Parameter>--enable-nodejs</Parameter>
-                		</CEFCommandLine>
-				<ScriptPath>./jsx/hostscript.jsx</ScriptPath>
+          <CEFCommandLine>
+            <Parameter>--enable-nodejs</Parameter>
+          </CEFCommandLine>
+				<!-- <ScriptPath>./jsx/hostscript.jsx</ScriptPath> -->
 				</Resources>
 				<Lifecycle>
 					<AutoVisible>true</AutoVisible>
