@@ -3,8 +3,15 @@
 
 //@include '../js/libs/json2.js';
 
-function alertTest() {
-  alert('test');
+function test() {
+  var comp = app.project.activeItem;
+  var layer = comp.selectedLayers[0];
+  var prop = layer.selectedProperties.pop();
+
+  alert(comp.name);
+  alert(layer.name);
+  alert(prop.name);
+  alert(prop.value);
 }
 
 function saveJob(job) {
@@ -25,21 +32,39 @@ function saveJob(job) {
 
 function updateAESource() {
   var data = {};
-  var comp, layer, prop, value;
+  var comp, layer, prop;
   if (app.project.activeItem instanceof CompItem) {
     comp = app.project.activeItem;
     data.comp = comp.name;
   }
   if (app.project.activeItem.selectedLayers.length > 0) {
-    layer = app.project.activeItem.selectedLayers[0];
+    layer = comp.selectedLayers[0];
     data.layer = layer.name;
   }
   if (app.project.activeItem.selectedProperties.length > 0) {
-    prop = app.project.activeItem.selectedProperties[0];
-    // If not PropertyType.PROPERTY then return
-    data.prop = prop.name;
+    // var selProps = app.project.activeItem.selectedProperties;
+    var prop = layer.selectedProperties.pop();
+    var propNameList = [];
+
+    propNameList.push(prop.name);
+
+    for (var i = 1; i < prop.propertyDepth; i++) {
+      var current = prop.propertyGroup(i);
+      // Avoid including non-Effect group name
+      if (current.name != 'Transform' && current.name != 'Text') {
+        propNameList.unshift(current.name);
+      }
+    }
+
+    data.prop = propNameList.join('.'); // ex. Effect.Fill.Color
     data.type = 'data';
-    data.value = prop.font;
+
+    // Source Text handling
+    if (prop.propertyValueType == PropertyValueType.TEXT_DOCUMENT) {
+      data.value = String(prop.value);
+    } else {
+      data.value = prop.value;
+    }
   } else if (layer != undefined) {
     if (layer.source instanceof FootageItem) {
       data.value = layer.source.file.fsName.replace(/\\/gi, '/');
