@@ -70,6 +70,10 @@ document.addEventListener('alpine:init', () => {
       submit() {
         const modalBody = document.getElementById('modal-body');
         modalBody.innerText = 'Submitting...';
+        // jsx.evalScript('alert("test")');
+        jsx.evalFile('saveJob.jsx', {
+          dataStr: JSON.stringify(this.data),
+        });
       },
 
       clear() {
