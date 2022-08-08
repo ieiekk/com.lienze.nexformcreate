@@ -1,8 +1,8 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global $, window, location, CSInterface, SystemPath, themeManager*/
 
-// const fs = require('fs');
-// const os = require('os');
+const os = require('os');
+const fs = require('fs');
 
 var csInterface = new CSInterface();
 
@@ -18,12 +18,7 @@ let projectFilepath = '';
 let projectFolderpath = '';
 let fps = 29.97;
 
-/* Helper function to create and return a promise object */
-function runEvalScript(script) {
-  return new Promise(function (resolve, reject) {
-    csInterface.evalScript(script, resolve);
-  });
-}
+const modalBody = document.getElementById('modal-body');
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('Quests', function () {
@@ -75,12 +70,35 @@ document.addEventListener('alpine:init', () => {
       },
 
       submit() {
-        const modalBody = document.getElementById('modal-body');
         modalBody.innerText = 'Submitting...';
         let job = questsToJob(this.data.quests);
         let jobContent = JSON.stringify(job);
-        // if()
-        // fs.writeFile(`${projectFolderpath}/`);
+
+        let jobPath = os.platform().includes('darwin')
+          ? `/${projectFolderpath}/exampleJob.json`
+          : `${projectFolderpath}/exampleJob.json`;
+
+        // Create exampleJob.json
+        fs.writeFileSync(jobPath, jobContent, function (err) {
+          if (err) console.log(err);
+        });
+
+        let formData = createFormData(this.data);
+        let formDataPath = os.platform().includes('darwin')
+          ? `/${projectFolderpath}/formData.json`
+          : `${projectFolderpath}/formData.json`;
+
+        // Create formData.json
+        fs.writeFileSync(
+          formDataPath,
+          JSON.stringify(formData),
+          function (err) {
+            if (err) console.log(err);
+          }
+        );
+
+        modalBody.innerText = 'Done.';
+        document.getElementById('submit-OK-button').disabled = true;
       },
 
       clear() {
@@ -99,6 +117,8 @@ document
   .getElementById('btn-add')
   .addEventListener('mouseenter', updateAESource);
 document.getElementById('btn-submit').addEventListener('click', () => {
+  document.getElementById('submit-OK-button').disabled = false;
+  modalBody.innerText = 'Are you sure to submit this form?';
   updateProjectFilepath();
   updateFps();
 });
@@ -186,6 +206,26 @@ function questsToJob(quests) {
   // alert(JSON.stringify(job));
 
   return job;
+}
+
+function createFormData(data) {
+  let content = {
+    formTitle: 'Title',
+    formDescription: 'Description',
+    pages: 1,
+    quests: [],
+  };
+
+  content.formTitle = data.formTitle;
+  content.formDescription = data.formDescription;
+  content.pages = data.quests.length;
+  content.quests = data.quests.map((pageQuests) => {
+    return pageQuests.map((q) => {
+      return q.form;
+    });
+  });
+
+  return content;
 }
 
 function uuid() {

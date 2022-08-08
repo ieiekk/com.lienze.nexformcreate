@@ -56,6 +56,7 @@
 				<MainPath>./index.html</MainPath>
           <CEFCommandLine>
             <Parameter>--enable-nodejs</Parameter>
+            <Parameter>--mixed-context</Parameter>
           </CEFCommandLine>
 				<ScriptPath>./jsx/hostscript.jsx</ScriptPath>
 				</Resources>
