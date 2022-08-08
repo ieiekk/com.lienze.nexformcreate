@@ -38,7 +38,7 @@
           Are you sure to submit this form?
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary"  @click="submit">OK</button>
+          <button type="button" class="btn btn-primary" @click="submit">OK</button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -90,7 +90,7 @@
         <div class="button-group d-flex flex-row justify-content-end my-3">
 
           <!-- Submit Button -->
-          <button type="button" class="btn btn-primary align-self-center" data-bs-toggle="modal"
+          <button id="btn-submit" type="button" class="btn btn-primary align-self-center" data-bs-toggle="modal"
             data-bs-target="#submitModal"
             @click="()=>{document.getElementById('modal-body').innerText = 'Are you sure to submit this form?'}">
             Submit

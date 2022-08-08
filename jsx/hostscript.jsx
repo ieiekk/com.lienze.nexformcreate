@@ -14,22 +14,6 @@ function test() {
   alert(prop.value);
 }
 
-function saveJob(job) {
-  var os = $.os.split('/')[0];
-
-  var jobFile;
-  if (os == 'Windows') {
-    jobFile = new File('C:/Users/Public/Documents/exampleJob.json');
-  } else {
-    jobFile = new File('/Users/Shared/exampleJob.json');
-  }
-  jobFile.encoding = 'UTF8';
-  jobFile.open('w');
-  jobFile.write(JSON.stringify(job));
-  jobFile.close();
-  return jobFile;
-}
-
 function updateAESource() {
   var data = {};
   var comp, layer, prop;
@@ -82,4 +66,41 @@ function updateAESource() {
   return JSON.stringify(data);
 }
 
-alert(updateAESource());
+function getProjectFilepath() {
+  if (app.project == undefined || app.project == null) {
+    return;
+  }
+  var os = $.os.split('/')[0];
+  var filePath = app.project.file.fsName.replace(/\\/gi, '/');
+
+  if (os.indexOf('Win') == -1) {
+    filePath = filePath.substr(1);
+  }
+
+  return filePath;
+}
+
+function getFps() {
+  if (getCompItemByName('Main') == null) {
+    return;
+  }
+
+  return round2Two(getCompItemByName('Main').frameRate);
+}
+
+function getCompItemByName(n) {
+  for (var i = 1; i <= app.project.numItems; i++) {
+    var item = app.project.item(i);
+    if (item instanceof CompItem && item.name == n) {
+      return item;
+    }
+  }
+  return null;
+}
+
+function round2Two(f) {
+  f *= 100;
+  f = Math.floor(f);
+  f /= 100;
+  return f;
+}

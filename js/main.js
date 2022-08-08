@@ -1,6 +1,9 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, regexp: true, indent: 4, maxerr: 50 */
 /*global $, window, location, CSInterface, SystemPath, themeManager*/
 
+// const fs = require('fs');
+// const os = require('os');
+
 var csInterface = new CSInterface();
 
 let AESource = {
@@ -10,6 +13,10 @@ let AESource = {
   prop: 'Prop',
   value: 'Value',
 };
+
+let projectFilepath = '';
+let projectFolderpath = '';
+let fps = 29.97;
 
 /* Helper function to create and return a promise object */
 function runEvalScript(script) {
@@ -39,7 +46,7 @@ document.addEventListener('alpine:init', () => {
             options: ['選項一', '選項二', '選項三'],
           },
           AE: {
-            type: 'data',
+            type: AESource.type,
             comp: AESource.comp,
             layer: AESource.layer,
             prop: AESource.prop,
@@ -70,10 +77,10 @@ document.addEventListener('alpine:init', () => {
       submit() {
         const modalBody = document.getElementById('modal-body');
         modalBody.innerText = 'Submitting...';
-        // jsx.evalScript('alert("test")');
-        jsx.evalFile('saveJob.jsx', {
-          dataStr: JSON.stringify(this.data),
-        });
+        let job = questsToJob(this.data.quests);
+        let jobContent = JSON.stringify(job);
+        // if()
+        // fs.writeFile(`${projectFolderpath}/`);
       },
 
       clear() {
@@ -87,11 +94,13 @@ document.addEventListener('alpine:init', () => {
 });
 
 // addEventListener('mousemove', () => {});
-document.getElementById('btn-test').addEventListener('click', () => {
-  updateAESource();
-});
-document.getElementById('btn-add').addEventListener('mouseenter', () => {
-  updateAESource();
+document.getElementById('btn-test').addEventListener('click', updateAESource);
+document
+  .getElementById('btn-add')
+  .addEventListener('mouseenter', updateAESource);
+document.getElementById('btn-submit').addEventListener('click', () => {
+  updateProjectFilepath();
+  updateFps();
 });
 
 // Utils
@@ -100,6 +109,83 @@ function updateAESource() {
   csInterface.evalScript('updateAESource()', (res) => {
     AESource = JSON.parse(res);
   });
+}
+
+function updateProjectFilepath() {
+  csInterface.evalScript('getProjectFilepath()', (res) => {
+    projectFilepath = res;
+    projectFolderpath = projectFilepath.split('/').slice(0, -1).join('/');
+  });
+}
+
+function updateFps() {
+  csInterface.evalScript('getFps()', (res) => {
+    fps = res;
+  });
+}
+
+function questsToJob(quests) {
+  let job = {
+    template: {},
+    assets: [],
+    actions: { postrender: [] },
+  };
+
+  // Template
+  job.template = {
+    src: 'file:///' + projectFilepath,
+    composition: 'Main', // Fixed name
+    outputModule: 'High Quality',
+    outputExt: 'mov',
+  };
+
+  // Assets
+  quests.forEach((pageQuests) => {
+    pageQuests.forEach((q) => {
+      let content;
+      if (
+        q.AE.type == 'image' ||
+        q.AE.type == 'video' ||
+        q.AE.type == 'audio'
+      ) {
+        content = {
+          type: q.AE.type,
+          src: q.AE.value.slice(0, 1)
+            ? 'file://' + q.AE.value
+            : 'file:///' + q.AE.value, // Change src path depends on first char ('/' or not)
+          layerName: q.AE.layer,
+          composition: q.AE.comp,
+        };
+      } else if (q.AE.type == 'data') {
+        content = {
+          type: 'data',
+          layerName: q.AE.layer,
+          property: q.AE.prop,
+          value: q.AE.value,
+          composition: q.AE.comp,
+        };
+      }
+      job.assets.push(content);
+    });
+  });
+
+  // Actions
+  job.actions = {
+    postrender: [
+      {
+        module: '@nexrender/action-encode',
+        preset: 'mp4',
+        output: projectFolderpath + '/preview.mp4',
+        params: {
+          '-r': fps,
+        },
+      },
+    ],
+  };
+
+  // alert(JSON.stringify(job));
+
+  return job;
 }
 
 function uuid() {
