@@ -31,6 +31,8 @@
 
 <body require-nodejs class="hostElt" x-data="Quests">
 
+  <button id="btn-TEST">TEST</button>
+
   <!-- Submit Modal -->
   <div class="modal fade" id="submitModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog  modal-dialog-centered">
@@ -39,14 +41,13 @@
           <h5 class="modal-title" id="exampleModalLabel">Confirm Message</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div id="modal-body" class="modal-body" x-ref="modalBody" >
+        <div id="modal-body" class="modal-body" x-ref="modalBody">
           Are you sure to submit this form?
         </div>
         <div class="modal-footer">
-          <button id="submit-OK-button" type="button" class="btn btn-primary" @click="submit"
-           >OK</button>
-          <button id="submit-cancel-button" type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-           >Cancel</button>
+          <button id="submit-OK-button" type="button" class="btn btn-primary" @click="submit">OK</button>
+          <button id="submit-cancel-button" type="button" class="btn btn-secondary"
+            data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
     </div>

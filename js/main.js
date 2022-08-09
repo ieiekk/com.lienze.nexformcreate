@@ -17,6 +17,8 @@ let AESource = {
 let projectFilepath = '';
 let projectFolderpath = '';
 let fps = 29.97;
+const URL =
+  'https://script.google.com/macros/s/AKfycbxYOXYHim14khBuwCmump5F3hWXWCaBuEtrmpEBrQlKs0WFobeFGMYhKAdSPtMlDVTXDA/exec';
 
 const modalBody = document.getElementById('modal-body');
 
@@ -97,8 +99,19 @@ document.addEventListener('alpine:init', () => {
           }
         );
 
+        csInterface.evalScript('confirm("Send request?")', (res) => {
+          if (res == 'true') {
+            sendRequest(URL, job);
+          } else {
+            alert('Didnt send request');
+          }
+        });
+        // sendRequest();
+
+        // Change UI
         modalBody.innerText = 'Done.';
-        document.getElementById('submit-OK-button').disabled = true;
+        document.getElementById('submit-OK-button').style = 'display:none;';
+        document.getElementById('submit-cancel-button').innerText = 'Close';
       },
 
       clear() {
@@ -117,8 +130,12 @@ document
   .getElementById('btn-add')
   .addEventListener('mouseenter', updateAESource);
 document.getElementById('btn-submit').addEventListener('click', () => {
-  document.getElementById('submit-OK-button').disabled = false;
+  // Modal UI rest
   modalBody.innerText = 'Are you sure to submit this form?';
+  document.getElementById('submit-OK-button').style = '';
+  document.getElementById('submit-cancel-button').innerText = 'Cancel';
+
+  // Do things
   updateProjectFilepath();
   updateFps();
 });
@@ -226,6 +243,20 @@ function createFormData(data) {
   });
 
   return content;
+}
+
+function sendRequest(url, content) {
+  axios
+    .post(url, {
+      data: content,
+      headers: 'application/json',
+    })
+    .then((res) => {
+      alert(res);
+    })
+    .catch((err) => {
+      alert(err);
+    });
 }
 
 function uuid() {
