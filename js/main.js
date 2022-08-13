@@ -227,16 +227,18 @@ function questsToJob(quests) {
 
 function createFormData(data) {
   let content = {
-    formTitle: 'Title',
-    formDescription: 'Description',
-    pages: 1,
-    quests: [],
+    data: {
+      formTitle: 'Title',
+      formDescription: 'Description',
+      pages: 1,
+      quests: [],
+    },
   };
 
-  content.formTitle = data.formTitle;
-  content.formDescription = data.formDescription;
-  content.pages = data.quests.length;
-  content.quests = data.quests.map((pageQuests) => {
+  content.data.formTitle = data.formTitle;
+  content.data.formDescription = data.formDescription;
+  content.data.pages = data.quests.length;
+  content.data.quests = data.quests.map((pageQuests) => {
     return pageQuests.map((q) => {
       return q.form;
     });
